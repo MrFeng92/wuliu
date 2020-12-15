@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+				         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				         http://www.springframework.org/schema/context
+				         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+    <!-- 配置包扫描 -->
+    <context:component-scan base-package="com.shiro.service"></context:component-scan>
+
+    <!-- 配置Mysql的数据源 -->
+    <bean id="dataSourceMysql" class="com.zaxxer.hikari.HikariDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost/ht1602?characterEncoding=utf-8"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+    </bean>
+    <!-- 配置Oracle的数据源
+    1.hikariCP数据库连接池
+    hikari是2013年年末诞生的，是日本程序员开发的，在日文里，是光的意思。也是快的意思
+    1.对底层的字节码进行了精简和优化。比如用c3p0生成方法对象的时候，可能占500个字节码。
+    但是hikari一是从代码的层面进行精简，二是自己实现了一套压缩算法，所以生成的字节码少，这样cpu在处理的时候会更快
+    2.对底层的拦截器和代理对象进行了优化，比如用c3p0生成的代理对象，有100行，但是hikari生成的可能只有20行。所以
+    处理的速度也会更快
+    3.c3p0连接池，在保存连接的时候，用的是ArrayList来保存的，对于在增加（put)或移除（remove)的时候，
+    会导致整表数据的移动，导致性能很低。Hikari用的是自定义的数据结构类型，FastArrayList。提高了性能
+    4.ConcurrentBag数据结构类型，专门应对高并发场景的读写。
+    HashMap是线程非安全的，（虽然快）
+    HashTable 线程安全的，每个方法sychronized。这里，Hikari借鉴了分段锁的概念，所以可以提高并发性能
+
+     -->
+    <bean id="dataSourceOracle" class="com.zaxxer.hikari.HikariDataSource">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+        <property name="jdbcUrl" value="jdbc:oracle:thin:@127.0.0.1:1521:XE"></property>
+        <property name="username" value="htdb"></property>
+        <property name="password" value="ht"></property>
+    </bean>
+
+
+</beans>

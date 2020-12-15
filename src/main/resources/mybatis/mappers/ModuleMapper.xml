@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 注意，namespace的名字要和对应的接口的全路径名一致 -->
+<mapper namespace="com.shiro.mapper.ModuleMapper">
+    <!--如果单表是单表查询，不涉及关联对象的查询，可以开启驼峰映射规则，在Mybatis的核心配置文件里来开启。
+    强调：如果想做关联查询，比如一对一或一对多查询，还是需要用resultMap来配置 -->
+    <select id="findAllModule" resultType="Module">
+  select * from module_p
+</select>
+
+</mapper> 

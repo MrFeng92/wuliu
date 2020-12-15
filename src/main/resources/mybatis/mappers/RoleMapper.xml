@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 注意，namespace的名字要和对应的接口的全路径名一致 -->
+<mapper namespace="com.shiro.mapper.RoleMapper">
+<!--1.查询所有角色  -->
+<select id="findAllRole" resultType="Role">
+select * from role_p
+</select>
+<!-- 2.角色新增 -->
+<insert id="roleInsert" parameterType="Role">
+insert into role_p(role_id,name,remark,order_no,create_time,update_time)
+values(#{roleId},#{name},#{remark},#{orderNo},#{createTime},#{updateTime})
+</insert>
+<!-- 3.根据id来查询角色 -->
+<select id="findRoleById" parameterType="string" resultType="Role">
+select * from role_p where role_id=#{roleId}
+</select>
+<!-- 4.根据主键来进行角色更新 -->
+<update id="roleUpdate" parameterType="Role">
+update role_p set name=#{name},remark=#{remark} where role_id=#{roleId}
+</update>
+
+<!-- 5.根据主键来删除角色 -->
+<delete id="deleteRole" parameterType="string">
+delete from role_p where role_id=#{roleId}
+</delete>
+
+<!-- 6.根据roleId,查询中间表，得到当前role_id的所有权限id集合 -->
+<select id="findModuleIdsByRoleId" parameterType="string" resultType="string">
+select * from role_module_p where role_id=#{roleId}
+</select>
+
+<!-- 7.向中间表插入角色—权限信息 -->
+<insert id="insertRoleModule" parameterType="map">
+insert into role_module_p (role_id,module_id)values(#{roleId},#{moduleId})
+</insert>
+
+</mapper> 

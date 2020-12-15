@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+				         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+
+
+
+
+				         http://www.springframework.org/schema/aop 
+				         http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+    <!-- 1.shiro和spring整合之后，shiro的组件都要以bean的方式交给Spring来管理
+       This post processor makes it easier
+     * to configure Shiro beans in Spring -->
+    <bean id="lifeCycleBeanProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <!-- 2.lifeCycleBeanProcessor需要通过代理方式来生成 -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifeCycleBeanProcessor">
+        <!-- proxyTargetClass默认值是false，表示只能jdk代理，不能用cglib代理
+             如果把属性值改成true,表示开启cglib代理 -->
+        <property name="proxyTargetClass" value="true"></property>
+    </bean>
+
+    <!-- 3.配置使用cglib代理 ,shiro和Spring整合，必须使用cglib代理，jdk代理用不了，
+     所以把：proxy-target-class="true" 属性是改成true（默认值使false)-->
+    <aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+
+
+    <!-- 4.配置shiro的安全管理器，SecurityManager,这个是shiro的核心
+          shiro 可以帮在咱们用户登录，用户授权等，但前提是程序员需要给shiro提供相关的资料
+                    比如用户登录，我们需要提供用户名、密码等资料
+                    比如用户授权，我们需要提供用户权限等资料，这些资料需要在自定义的类里写，并且这个类要继承
+           AuthorizingRealm，这样shiro才会知识，并做处理-->
+    <bean id="securityManager" class="org.apache.shiro.mgt.DefaultSecurityManager">
+        <property name="realm" ref="authRealm"></property>
+    </bean>
+    <!-- 5.配置自定义realm类，在这个类来处理用户登录和授权，注意这个类要继承AuthorizingRealm -->
+    <bean id="authRealm" class="com.shiro.shiro.AuthRealm">
+        <!-- name属性写死，ref连接的是自定义加密管理bean的id名字 -->
+        <property name="credentialsMatcher" ref="authCredential"></property>
+    </bean>
+
+    <!-- 6.配置授权管理器-->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <!-- 注意 name属性名写死：securityManager -->
+        <property name="securityManager" ref="securityManager"></property>
+    </bean>
+
+    <!-- 7.配置shiro的Filter  -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"></property>
+        <!-- 配置默认的登录页面 -->
+        <property name="loginUrl" value="/login.jsp"></property>
+        <!-- 配置shiro的Filter链 -->
+        <property name="filterChainDefinitions">
+            <value>
+                <!-- anon 代表资源放行 authc代表路径。
+                此外需要注意，配置的顺序问题 -->
+
+                /validate/doLogin=anon
+                /staticfile/**=anon
+                /validate/logout=logout
+                /**=authc
+
+            </value>
+        </property>
+
+    </bean>
+
+    <!--8. 配置自定义的加密管理器 -->
+    <bean id="authCredential" class="com.shiro.shiro.AuthCredential"/>
+</beans>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--Mybatis配置的标签是有顺序要求的，顺序为：
+    properties?,settings?,typeAliases?,typeHandlers?,
+    objectFactory?,objectWrapperFactory?,
+    plugins?,environments?,databaseIdProvider?,mappers?  -->
+    <settings>
+        <!-- name属性写死， mapUnderscoreToCamelCase。这个属性可以在Configuration类里找到
+        驼峰映射规则默认是不开启的，如果想开启，把value变成true即可-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    <!-- 包别名机制 -->
+    <typeAliases>
+        <!-- 。
+        但是需要注意：配置完包别名机制之后，只能写类的简名，如果写全路径的话，会报错
+         -->
+        <package name="com.shiro.pojo"/>
+    </typeAliases>
+</configuration>

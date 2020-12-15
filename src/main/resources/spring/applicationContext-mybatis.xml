@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+				         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				         http://www.springframework.org/schema/context
+				         http://www.springframework.org/schema/context/spring-context-3.0.xsd
+				         http://www.springframework.org/schema/tx
+				         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+				         http://www.springframework.org/schema/aop">
+
+		
+<!--配置sqlSessionFactory -->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<!-- 配置SqlSessionFatory的数据源，需要检查数据源的配置参数是否正确 -->
+	<property name="dataSource" ref="dataSourceOracle"></property>
+	<!-- 加载Mybatis的核心配置文件，不要被src/main/resource 这个名字所迷惑，要看的这个目录下发布后的文件放在哪 -->
+	<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+	<!-- 加载Mybatis的所有映射文件，注意的*.xml，不要把*漏掉,注意，在搭框架之前，最好在mappers这个目录下引进一个Mapper.xml
+	防止报错-->
+	<property name="mapperLocations" value="classpath:mybatis/mappers/*.xml"></property>
+	
+</bean>
+
+<!-- Mybatis会生成接口的代理类，并且把这个代理类交给Spring来管理，这样可以通过bean的方式来注入进来 -->
+<!-- 配置Mapper接口扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 扫描包接口，注意包路径-->
+		<property name="basePackage" value="com.shiro.mapper"></property>
+	</bean> 
+	       
+	         
+
+</beans>

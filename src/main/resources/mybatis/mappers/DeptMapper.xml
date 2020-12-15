@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 注意，namespace的名字要和对应的接口的全路径名一致 -->
+<mapper namespace="com.shiro.mapper.DeptMapper">
+
+<!-- 这里可以用到Mybtais提供的包别名机制，在Mybatis的核心配置文件来配置 -->
+<resultMap type="Dept" id="deptRM">
+
+    <id property="deptId" column="dept_id"></id>
+    <result property="parentId" column="parent_id"/>
+    <result property="deptName" column="dept_name"/>
+    <result property="orderNo" column="order_no"/>
+    <result property="state" column="state"/>
+    <result property="createBy" column="create_by"/>
+    <result property="createDept" column="create_dept"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateBy" column="update_by"/>
+    <result property="updateTime" column="update_time"/>
+
+    <!-- 配置父部门的自关联关系，实际是一对一 -->
+    <association property="parentDept" javaType="Dept">
+    	<id property="deptId" column="pid"></id>
+    	<result property="deptName" column="pname"/>
+    </association>
+</resultMap>
+<!-- 1.查询部门及父部门信息 -->
+<select id="findAllDept" resultMap="deptRM">
+select * from dept_p left join
+(select dept_id as pid,dept_name as pname from dept_p)parent_p
+on dept_p.parent_id=parent_p.pid
+</select>
+
+<!-- 2.部门新增,注意，有了包别名，parameterType直接写Dept -->
+<insert id="insert" parameterType="Dept">
+insert into dept_p (dept_id,dept_name,parent_id,create_time,update_time,state)
+values(#{deptId},#{deptName},#{parentId},#{createTime},#{updateTime},#{state})
+</insert>
+
+<!-- 3.根据主键来查找对应的部门信息,因为对象的私有属性和字段名，所以还是需要resultMap来做字段映射 -->
+<select id="findDeptById" parameterType="string" resultMap="deptRM">
+select * from dept_p where dept_id=#{deptId}
+</select>
+
+<!-- 4.更新部门信息 -->
+<update id="update" parameterType="Dept">
+update dept_p
+<set>
+<if test="deptName!=null">dept_name=#{deptName},</if>
+<if test="parentId!=null">parent_id=#{parentId},</if>
+<if test="updateTime!=null">update_time=#{updateTime},</if>
+<if test="state!=null">state=#{state},</if>
+</set>
+where dept_id=#{deptId}
+</update>
+
+<!-- 5.根据主键，删除单个部门对象 -->
+<delete id="deleteone" parameterType="string">
+delete from dept_p where dept_id=#{deptId}
+</delete>
+
+<!-- 6.批量删除部门 -->
+<delete id="deleteBatch" parameterType="string">
+delete from dept_p where dept_id in
+<foreach collection="array" open="(" close=")" separator="," item="id">
+#{id}
+</foreach>
+</delete>
+</mapper> 
